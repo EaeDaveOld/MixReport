@@ -93,9 +93,20 @@ def ApplyFilter():
 
 # Function that generate report PDF
 def GeneratePDF():
-    GENERATE_PDF_BUTTON = DRIVER.find_element(
-        By.XPATH, '//*[@id="mainview"]/div[1]/div/div[1]/div/div[3]/div[3]/ul[2]/li[3]/a')
-    GENERATE_PDF_BUTTON.click()
+    Try_Again = True
+    while Try_Again:
+        try:
+            GENERATE_PDF_BUTTON = DRIVER.find_element(
+                By.XPATH, '//*[@id="mainview"]/div[1]/div/div[1]/div/div[3]/div[3]/ul[2]/li[3]/a')
+            GENERATE_PDF_BUTTON.click()
+            Try_Again = False
+        except:
+            print(
+                'O estoque está zerado ou o código de fornecedor é inválido, tente novamente. ')
+
+            Request_SupplierCode()
+            ApplyFilter()
+            Wait_Load()
 
 
 # Function to close PDF report Window
@@ -110,6 +121,23 @@ def Select_First_Window():
     Actual_Window = DRIVER.window_handles[0]
     DRIVER.switch_to.window(Actual_Window)
 
+# Main Loop function
+
+
+def MainLoop():
+    while True:
+        Request_SupplierCode()
+        Close_PDF_Window()
+        Wait_Load()
+
+        Select_First_Window()
+
+        ApplyFilter()
+        Wait_Load()
+
+        GeneratePDF()
+        Wait_Load()
+
 
 LoginRub()
 Wait_Load()
@@ -120,4 +148,4 @@ Wait_Load()
 GeneratePDF()
 Wait_Load()
 
-input()
+MainLoop()
